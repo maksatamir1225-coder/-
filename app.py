@@ -332,4 +332,4 @@ all_questions = {
          "options": ["А) CH₃COOH", "В) HCOOH", "С) C₂H₅COOH", "D) C₆H₅COOH"], 
          "correct": 0},
         {"question": "3. Қышқыл негізбен реакцияға түскенде нені береді?", 
-         "options": ["А) Тұз + су", "В) Эфир",
+         "options": ["А) Тұз + су", "В) Эфир"],
