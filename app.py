@@ -333,3 +333,4 @@ all_questions = {
          "correct": 0},
         {"question": "3. Қышқыл негізбен реакцияға түскенде нені береді?", 
          "options
+         
