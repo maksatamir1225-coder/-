@@ -695,6 +695,41 @@ if "animation_step" not in st.session_state:
 if "show_animation" not in st.session_state:
     st.session_state.show_animation = False
 
+# Функция для отрисовки пробирки
+def draw_test_tube(color, height_percent=80, label=""):
+    """Рисует пробирку с жидкостью"""
+    tube_height = 150
+    liquid_height = tube_height * height_percent / 100
+    
+    # Создаем HTML для пробирки
+    html = f"""
+    <div style="position: relative; width: 80px; height: {tube_height}px; margin: 10px auto;">
+        <!-- Пробирка (стекло) -->
+        <div style="position: absolute; width: 60px; height: {tube_height}px; left: 10px; 
+                    border: 3px solid #888; border-radius: 0 0 10px 10px; 
+                    background: linear-gradient(to right, rgba(255,255,255,0.3), rgba(255,255,255,0.1));">
+        </div>
+        
+        <!-- Жидкость -->
+        <div style="position: absolute; width: 54px; height: {liquid_height}px; left: 13px; bottom: 3px;
+                    border-radius: 0 0 8px 8px; background-color: {color}; 
+                    border-top: 2px solid {color}88;">
+        </div>
+        
+        <!-- Пузырьки -->
+        <div style="position: absolute; width: 10px; height: 10px; left: 30px; bottom: {liquid_height + 10}px;
+                    background-color: white; border-radius: 50%; opacity: 0.7;"></div>
+        <div style="position: absolute; width: 7px; height: 7px; left: 40px; bottom: {liquid_height + 20}px;
+                    background-color: white; border-radius: 50%; opacity: 0.5;"></div>
+        
+        <!-- Подпись -->
+        <div style="position: absolute; top: {tube_height + 10}px; width: 100%; text-align: center; font-weight: bold;">
+            {label}
+        </div>
+    </div>
+    """
+    return html
+
 # Функция для анимации пробирок
 def show_lab_animation(lesson_id):
     """Показывает анимацию химической реакции для урока"""
@@ -706,25 +741,25 @@ def show_lab_animation(lesson_id):
         st.session_state.animation_triggered[lesson_id] = True
         st.session_state.animation_step = 0
     
-    # Анимационные цвета для разных реакций
+    # Цвета жидкостей для разных реакций
     colors = {
-        1: ["⚪️", "🟢", "🟡"],  # Алкандар - хлорлау
-        2: ["⚪️", "🟡", "🔴➡️⚪️"],  # Алкендер - бром суы
-        3: ["⚪️", "🟣", "⬜️⬇️"],  # Алкиндер - күміс оксиді
-        4: ["🔵", "⚪️", "💨"],  # Спирттер - натриймен
-        5: ["⚪️", "🟣", "🟣"],  # Фенолдар - FeCl₃
-        6: ["⚪️", "🟣", "🪞"],  # Альдегидтер - күміс айна
-        7: ["🟡", "🟤", "🟡⬇️"],  # Кетондар - иодоформ
-        8: ["🔴", "🟢", "🔵", "🔴➡️⚪️"],  # Салыстыру - бром суы
-        9: ["🔴", "🔵", "🟡"],  # Қышқылдар - нейтрализация
-        10: ["🔴", "🔵", "🍓"],  # Эфирлер - этерификация
+        1: ["#87CEEB", "#90EE90", "#ADD8E6"],  # Алкандар - голубой, зеленый
+        2: ["#FFFFFF", "#FF6347", "#FFA500"],  # Алкендер - белый, красный, оранжевый
+        3: ["#FFFFFF", "#DDA0DD", "#C0C0C0"],  # Алкиндер - белый, фиолетовый, серебро
+        4: ["#4169E1", "#FFFFFF", "💨"],  # Спирттер - синий, белый, газ
+        5: ["#FFFFFF", "#800080", "#800080"],  # Фенолдар - белый, фиолетовый
+        6: ["#FFFFFF", "#DDA0DD", "🪞"],  # Альдегидтер - белый, фиолетовый, зеркало
+        7: ["#FFD700", "#8B4513", "#FFD700"],  # Кетондар - золотой, коричневый
+        8: ["#FF0000", "#00FF00", "#0000FF", "→⚪️"],  # Сравнение - красный, зеленый, синий
+        9: ["#FF0000", "#0000FF", "#FFFF00"],  # Кислоты - красный, синий, желтый
+        10: ["#FF0000", "#0000FF", "🍓"],  # Эфиры - красный, синий, фруктовый
     }
     
     # Если для этого урока нет цветов, используем общие
     if lesson_id not in colors:
-        colors[lesson_id] = ["⚪️", "🟢", "🟡", "🔴", "🔵"]
+        colors[lesson_id] = ["#FFFFFF", "#90EE90", "#FFD700", "#FF0000", "#0000FF"]
     
-    lesson_colors = colors.get(lesson_id, ["⚪️", "🟢", "🟡"])
+    lesson_colors = colors.get(lesson_id, ["#FFFFFF", "#90EE90", "#FFD700"])
     
     # Анимационная область
     animation_container = st.empty()
@@ -738,7 +773,7 @@ def show_lab_animation(lesson_id):
         5: "C₆H₅OH + FeCl₃ → [Fe(C₆H₅O)₆]³⁻ + 3H⁺",
         6: "R-CHO + 2[Ag(NH₃)₂]⁺ → R-COOH + 2Ag↓",
         7: "CH₃COCH₃ + 3I₂ + 4NaOH → CHI₃↓ + CH₃COONa",
-        8: "Алкен: Br₂ → түссіздену\nАлкан: Br₂ → өзгермеу",
+        8: "Алкен: Br₂ → түссіздену\nАлкан: Br₂ → өзгермеу\nАлкин: Br₂ → түссіздену",
         9: "R-COOH + NaOH → R-COONa + H₂O",
         10: "R-COOH + R'-OH → R-COOR' + H₂O",
     }
@@ -749,7 +784,7 @@ def show_lab_animation(lesson_id):
         st.write(f"**Реакция:** {lessons[lesson_id-1]['animation']}")
         
         # Прогресс бар для анимации
-        progress = st.progress(st.session_state.animation_step / 5)
+        progress = st.progress(st.session_state.animation_step / 6)
         
         # Контейнер для пробирок
         col1, col2, col3 = st.columns([1, 1, 1])
@@ -757,58 +792,76 @@ def show_lab_animation(lesson_id):
         with col1:
             st.write("#### Реагент 1")
             if st.session_state.animation_step >= 1:
-                st.markdown(f"<div style='font-size: 60px; text-align: center;'>{lesson_colors[0]}</div>", 
-                          unsafe_allow_html=True)
-                st.write("")
+                st.markdown(draw_test_tube(lesson_colors[0], 80, "CH₄"), unsafe_allow_html=True)
         
         with col2:
             st.write("#### Реагент 2")
             if st.session_state.animation_step >= 2:
-                st.markdown(f"<div style='font-size: 60px; text-align: center;'>{lesson_colors[1]}</div>", 
-                          unsafe_allow_html=True)
-                st.write("")
+                reagent_label = "Cl₂" if lesson_id == 1 else "Br₂" if lesson_id == 2 else "Реагент"
+                st.markdown(draw_test_tube(lesson_colors[1], 80, reagent_label), unsafe_allow_html=True)
         
         with col3:
             st.write("#### Өнім")
             if st.session_state.animation_step >= 4:
-                st.markdown(f"<div style='font-size: 60px; text-align: center;'>{lesson_colors[2]}</div>", 
-                          unsafe_allow_html=True)
-                st.write("")
+                if lesson_id in [1, 2, 3, 4, 5, 6, 7]:
+                    product_label = "Өнім"
+                elif lesson_id == 8:
+                    product_label = "Нәтиже"
+                else:
+                    product_label = "Өнім"
+                st.markdown(draw_test_tube(lesson_colors[2], 80, product_label), unsafe_allow_html=True)
         
-        # Стрелка и формула
-        st.write("")
+        # Анимация смешивания
         if st.session_state.animation_step >= 3:
-            st.markdown("<div style='text-align: center; font-size: 30px;'>↓ + ↓ → ↓</div>", 
-                       unsafe_allow_html=True)
             st.write("")
-            st.markdown(f"<div style='text-align: center; font-size: 20px; padding: 10px; background-color: #f0f2f6; border-radius: 10px;'><b>{reactions.get(lesson_id, 'Химиялық реакция')}</b></div>", 
-                       unsafe_allow_html=True)
+            arrow_col1, arrow_col2, arrow_col3 = st.columns([1, 1, 1])
+            with arrow_col2:
+                st.markdown("<div style='text-align: center; font-size: 40px;'>↓ + ↓</div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align: center; font-size: 30px;'>⬇️</div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align: center; font-size: 40px;'>→</div>", unsafe_allow_html=True)
+            
+            # Показываем формулу реакции
+            st.write("")
+            st.markdown(f"<div style='text-align: center; font-size: 20px; padding: 10px; background-color: #f0f2f6; border-radius: 10px;'><b>{reactions.get(lesson_id, 'Химиялық реакция')}</b></div>", unsafe_allow_html=True)
+        
+        # Анимация процесса
+        if st.session_state.animation_step >= 5:
+            st.write("")
+            process_container = st.empty()
+            with process_container:
+                col_process1, col_process2, col_process3 = st.columns([1, 2, 1])
+                with col_process2:
+                    if st.session_state.animation_step == 5:
+                        st.markdown("<div style='text-align: center; font-size: 30px;'>⚡️ Реакция жүруде...</div>", unsafe_allow_html=True)
+                    elif st.session_state.animation_step == 6:
+                        st.markdown("<div style='text-align: center; font-size: 30px;'>✅ Реакция аяқталды!</div>", unsafe_allow_html=True)
         
         # Результат реакции
-        if st.session_state.animation_step >= 5:
+        if st.session_state.animation_step >= 6:
             results = {
-                1: "**Нәтиже:** Хлорланған алкан түзіледі",
-                2: "**Нәтиже:** Бром суы түссізденеді",
-                3: "**Нәтиже:** Ақ тұнба түзіледі",
-                4: "**Нәтиже:** Сутек газы бөлінеді",
+                1: "**Нәтиже:** Хлорланған алкан түзіледі (CH₃Cl)",
+                2: "**Нәтиже:** Бром суы түссізденеді - дибромоэтан түзіледі",
+                3: "**Нәтиже:** Ақ тұнба түзіледі (AgC≡CAg)",
+                4: "**Нәтиже:** Сутек газы бөлінеді (H₂↑)",
                 5: "**Нәтиже:** Күлгін түс пайда болады",
-                6: "**Нәтиже:** Күміс айна түзіледі",
-                7: "**Нәтиже:** Сары тұнба түзіледі",
-                8: "**Нәтиже:** Тек қана қос байланыс бар заттар түссізденеді",
+                6: "**Нәтиже:** Күміс айна түзіледі (Ag↓)",
+                7: "**Нәтиже:** Сары тұнба түзіледі (CHI₃)",
+                8: "**Нәтиже:** Тек қана қос байланыс бар заттар бром суын түссіздендіреді",
                 9: "**Нәтиже:** Тұз және су түзіледі",
                 10: "**Нәтиже:** Хош иісті эфир түзіледі",
             }
             st.success(results.get(lesson_id, "**Нәтиже:** Химиялық реакция өтеді"))
         
         # Кнопка управления анимацией
+        st.write("")
         col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 1])
         with col_btn1:
             if st.button("▶️ Анимацияны бастау", key=f"start_{lesson_id}"):
-                if st.session_state.animation_step < 5:
-                    for i in range(1, 6):
+                if st.session_state.animation_step < 6:
+                    for i in range(1, 7):
                         st.session_state.animation_step = i
-                        progress.progress(i/5)
-                        time.sleep(0.5)
+                        progress.progress(i/6)
+                        time.sleep(0.7)
                         st.rerun()
         with col_btn2:
             if st.button("🔄 Қайта бастау", key=f"reset_{lesson_id}"):
@@ -971,3 +1024,4 @@ st.markdown("---")
 st.write("**Барлығы: 19 сабақ × 10 сұрақ = 190 сұрақ**")
 st.write("*Барлық сұрақтар органикалық химияның негізгі тақырыптарын қамтиды*")
 st.write("*Әр сабақта химиялық реакциялардың анимациясы бар*")
+st.write("⚗️ *Пробиркалардың анимациясы химиялық процестерді көруге көмектеседі*")
